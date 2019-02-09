@@ -1,32 +1,38 @@
-# N27GW11A
+# N27 Smartphone Bank
 
-Schauen Sie hier, wie Sie ein fremdes Repo zu einem eigenen machen:
+http://symbolaris.com/info/Facharbeit/Softwareentwicklung.html
 
-1. Diesen Repo klonen.
+Entwicklung einer Smartphone Bank nach dem Vorbild der N26 Bank.
 
-2. Dieses Repo zum eigenen Repo machen und im eigenen Bitbucket wieder hochladen. Hier steht, wie es geht: https://padlet.com/stbaeumer/Programmierumgebung
+## Was soll die App können?
 
-3. Nach dem Klonen das Terminal öffnen und initialisieren:
+* Login
+* Überweisen
+* Kontostand abrufen
+* Konto anlegen
+* Hilfestellung / Supportdaten / FAQ / Chat
+* Kontobewegungen anzeigen
+* alle Konten in Übersicht anzeigen
+* diverse Einstellungen
+* Kredit aufnehmen
+* Wertpapierkauf / - verkauf
+* Geldanlage
+* Kategorien bilden / Ausgaben auswerten
+* Daueraufträge erstellen
+* Kreditline festlegen
 
-```npm init``` 
+## Welche Dateien, die die Ansicht zeigen sollen, werden benötigt?
 
-4.  Die folgenden Pakete installieren:
+Alle Dateien, die etwas anzeigen sollen werden in HTML geschrieben.
 
-```npm install -g express``` 
+* Startseite (index.html)
+* login (login.html)
+  * Benutzer-ID-Eingabe-Feld
+  * Passwort-Eingabe-Feld
+  * Bestätigungs-Button
 
-```npm install -g ejs``` 
 
-```npm install -g body-parser``` 
-
-```npm install -g request``` 
-
-```npm install -g cookie-parser``` 
-
-```npm install -g nodemon``` 
-
-```npm install -g express``` 
-
-```npm install```
+## Realisierung
 
 
 
