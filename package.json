@@ -1,0 +1,21 @@
+{
+  "name": "n27gw11a",
+  "version": "1.0.0",
+  "description": "Meine tolle Smartphone-BANK",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.16.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://stbaeumer@bitbucket.org/stbaeumer/n27gw11a.git"
+  },
+  "author": "Stefan",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/stbaeumer/n27gw11a#readme"
+}
