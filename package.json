@@ -4,7 +4,9 @@
   "description": "Meine tolle Smartphone-BANK",
   "main": "server.js",
   "dependencies": {
-    "express": "^4.16.4"
+    "ejs": "^2.6.1",
+    "express": "^4.16.4",
+    "nodemon": "^1.18.10"
   },
   "devDependencies": {},
   "scripts": {
