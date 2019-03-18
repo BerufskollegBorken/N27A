@@ -26,10 +26,8 @@ app.get('/',(req, res, next) => {
     }
 })
 
-app.get('/login',(req, res, next) => {       
-  
-    res.cookie('istAngemeldetAls', '')        
-    
+app.get('/login',(req, res, next) => {         
+    res.cookie('istAngemeldetAls', '')       
     res.render('login.ejs', {                    
     })
 })
@@ -43,8 +41,6 @@ app.post('/',(req, res, next) => {
         console.log("Der Cookie wird gesetzt:")
         res.cookie('istAngemeldetAls', idKunde)
         res.render('index.ejs', { 
-
-            // 11.3.
             user : idKunde
         })
     }else{            
@@ -54,4 +50,3 @@ app.post('/',(req, res, next) => {
         })
     }
 })
-
