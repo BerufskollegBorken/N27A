@@ -24,7 +24,7 @@
   <!-- Alles, was auf der Seite im Browserfenster angezeigt werden soll, muss im body stehen.-->
   <body>
     <h1>Bitte anmelden!</h1>
-    <form>
+    <form method="POST" action="/">
       <!-- Element, das etwas anzeigt -->
       <label>Benutzer-ID:</label>
       <!-- Element vom Typ Text, in das getippt werden kann -->
@@ -33,7 +33,7 @@
       <!-- Element vom Typ Password, das Eingaben maskiert -->
       <input type="password" name="kennwort">
       <!-- Element vom Typ Button, das eine Schaltfläche zeigt -->
-      <input type="button" name="Anmelden" value="Anmelden">
+      <button>Login</button>
     </form>     
   </body>
 </html>
