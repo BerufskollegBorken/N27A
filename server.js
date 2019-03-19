@@ -17,8 +17,7 @@ app.get('/',(req, res, next) => {
     
     if(idKunde){
         console.log("Kunde ist angemeldet als " + idKunde)
-        res.render('index.ejs', {                    
-            user : idKunde
+        res.render('index.ejs', {                              
         })
     }else{
         res.render('login.ejs', {                    
@@ -40,8 +39,7 @@ app.post('/',(req, res, next) => {
     if(idKunde === "4711" && kennwort === "123"){            
         console.log("Der Cookie wird gesetzt:")
         res.cookie('istAngemeldetAls', idKunde)
-        res.render('index.ejs', { 
-            user : idKunde
+        res.render('index.ejs', {           
         })
     }else{            
         console.log("Der Cookie wird gelöscht")
