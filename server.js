@@ -25,6 +25,25 @@ app.get('/',(req, res, next) => {
     }
 })
 
+// Wenn die Seite localhost:3000/impressum aufgerufen wird, ...
+
+app.get('/impressum',(req, res, next) => {   
+
+    let idKunde = req.cookies['istAngemeldetAls']
+    
+    if(idKunde){
+        console.log("Kunde ist angemeldet als " + idKunde)
+        
+        // ... dann wird impressum.ejs gerendert.
+        
+        res.render('impressum.ejs', {                              
+        })
+    }else{
+        res.render('login.ejs', {                    
+        })    
+    }
+})
+
 app.get('/login',(req, res, next) => {         
     res.cookie('istAngemeldetAls', '')       
     res.render('login.ejs', {                    
