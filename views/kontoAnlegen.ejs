@@ -14,15 +14,26 @@
     <meta name="msapplication-TileColor" content="#ffc40d">
     <meta name="theme-color" content="#ffffff">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">        
-    <title>N27 - Startseite</title>
+    <title>N27 - Konto anlegen</title>
   </head>
   <body>
     <header>
-      <h1>Herzlich Willkommen</h1>    
+      <h1>Konto anlegen</h1>    
     </header>    
-    <form>          
-      <button formaction="/kontoAnlegen">Konto anlegen</button>
-    </form>  
+    
+    <form method="POST" action="/">
+        <!-- Element, das etwas anzeigt -->
+        <label>Benutzer-ID:</label>
+        <!-- Element vom Typ Text, in das getippt werden kann -->
+        <input type="text" name="idKunde">
+        <label>Kennwort:</label>
+        <!-- Element vom Typ Password, das Eingaben maskiert -->
+        <input type="password" name="kennwort">
+        <!-- Element vom Typ Button, das eine Schaltfläche zeigt -->
+        <button>Login</button>
+      </form>        
+
+
     <nav>      
       <a href="/"><i class="fa fa-home" aria-hidden="true"></i></a>                        
       <a href="/login">Logout</a>        
