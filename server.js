@@ -1,3 +1,19 @@
+class Konto{
+    constructor(){
+        this.idKonto
+        this.betrag
+        this.art
+    }
+}
+
+let konto = new Konto()
+
+konto.idKonto = "1234"
+konto.betrag = 1000
+konto.art = "Girokonto"
+
+console.log(konto)
+
 const express = require('express')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
@@ -58,7 +74,8 @@ app.post('/',(req, res, next) => {
     if(idKunde === "4711" && kennwort === "123"){            
         console.log("Der Cookie wird gesetzt:")
         res.cookie('istAngemeldetAls', idKunde)
-        res.render('index.ejs', {           
+        res.render('index.ejs', {  
+            kunde : idKunde          
         })
     }else{            
         console.log("Der Cookie wird gelöscht")
