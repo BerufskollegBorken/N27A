@@ -1,19 +1,3 @@
-class Konto{
-    constructor(){
-        this.idKonto
-        this.betrag
-        this.art
-    }
-}
-
-let konto = new Konto()
-
-konto.idKonto = "1234"
-konto.betrag = 1000
-konto.art = "Girokonto"
-
-console.log(konto)
-
 const express = require('express')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')

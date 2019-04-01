@@ -21,17 +21,19 @@
       <h1>Konto anlegen</h1>    
     </header>    
     
-    <form method="POST" action="/">
+    <form method="POST" action="/kontoAnlegen">
         <!-- Element, das etwas anzeigt -->
-        <label>Benutzer-ID:</label>
+        <label>Kontonummer:</label>
         <!-- Element vom Typ Text, in das getippt werden kann -->
-        <input type="text" name="idKunde">
-        <label>Kennwort:</label>
+        <input type="number" name="kontonummer">
+        <label>Kontoart:</label>
         <!-- Element vom Typ Password, das Eingaben maskiert -->
-        <input type="password" name="kennwort">
+        <input type="text" name="kontoart">
         <!-- Element vom Typ Button, das eine Schaltfläche zeigt -->
-        <button>Login</button>
+        <button>Konto anlegen</button>
       </form>        
+
+      <label></label>
 
 
     <nav>      
