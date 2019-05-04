@@ -29,7 +29,7 @@
     </header>
     <form method="POST" action="/kontoAnlegen">
         <label>Kontonummer:</label>
-        <input type="number" name="kontonummer">
+        <input type="number" name="kontonummer" max="10" min="10" required>
         <label>Kontoart:</label>
         <input type="text" name="kontoart">        
         <button>Konto anlegen</button>
