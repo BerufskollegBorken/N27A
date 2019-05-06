@@ -96,7 +96,7 @@ app.get('/kontoAnlegen',(req, res, next) => {
     }
 })
 
-// Wenn der Button auf der kontoanlegen-Seite gedrückt wird, ...
+// Wenn der Button auf der kontoAnlegen-Seite gedrückt wird, ...
 
 app.post('/kontoAnlegen',(req, res, next) => {   
 
@@ -110,7 +110,7 @@ app.post('/kontoAnlegen',(req, res, next) => {
         konto.Kontoart = req.body.kontoart
               
         res.render('kontoAnlegen.ejs', {                              
-            meldung : "Das " + konto.Kontoart + " " + konto.Kontonummer + " wurde erfolgreich angelegt."
+            meldung : "Das " + konto.Kontoart + " mit der Kontonummer " + konto.Kontonummer + " wurde erfolgreich angelegt."
         })
     }else{
         res.render('login.ejs', {                    
