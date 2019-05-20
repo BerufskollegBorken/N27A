@@ -86,7 +86,8 @@ app.post('/',(req, res, next) => {
     
     const idKunde = req.body.idKunde
     const kennwort = req.body.kennwort
-        
+       
+    
     if(idKunde === kunde.IdKunde && kennwort === kunde.Kennwort){            
         console.log("Der Cookie wird gesetzt:")
         res.cookie('istAngemeldetAls', idKunde)
