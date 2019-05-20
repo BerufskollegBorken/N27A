@@ -6,6 +6,26 @@ class Konto{
     }
 }
 
+class Kunde{
+    constructor(){
+        this.Vorname
+        this.Nachname
+        this.Geschlecht
+        this.IdKunde
+        this.Geburtsdatum
+        this.Adresse
+        this.Kennwort
+    }
+}
+
+let kunde = new Kunde()
+kunde.IdKunde = 4711
+kunde.Kennwort = "123"
+kunde.Geburtsdatum = "1999-12-31"
+kunde.Nachname = "Franz"
+kunde.Vorname = "Valerie"
+kunde.Geschlecht = "w"
+
 const iban = require('iban')
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -67,7 +87,7 @@ app.post('/',(req, res, next) => {
     const idKunde = req.body.idKunde
     const kennwort = req.body.kennwort
         
-    if(idKunde === "4711" && kennwort === "123"){            
+    if(idKunde === kunde.IdKunde && kennwort === kunde.Kennwort){            
         console.log("Der Cookie wird gesetzt:")
         res.cookie('istAngemeldetAls', idKunde)
         res.render('index.ejs', {  
