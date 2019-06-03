@@ -28,30 +28,9 @@ let kunde = new Kunde()
 
 kunde.IdKunde = 4711
 kunde.Kennwort = "123"
-kunde.Geschlecht = "w"
-kunde.Nachname = "Schmidt"
+kunde.Geburtsdatum = "1999-12-31"
+kunde.Nachname = "Müller"
 kunde.Vorname = "Hildegard"
-kunde.Geburtsdatum = "1999-12-31"
-kunde.Adresse = "Berlin"
-
-class Kunde{
-    constructor(){
-        this.Vorname
-        this.Nachname
-        this.Geschlecht
-        this.IdKunde
-        this.Geburtsdatum
-        this.Adresse
-        this.Kennwort
-    }
-}
-
-let kunde = new Kunde()
-kunde.IdKunde = 4711
-kunde.Kennwort = "123"
-kunde.Geburtsdatum = "1999-12-31"
-kunde.Nachname = "Franz"
-kunde.Vorname = "Valerie"
 kunde.Geschlecht = "w"
 
 const iban = require('iban')
