@@ -119,7 +119,6 @@ app.post('/',(req, res, next) => {
     // den Request zugewiesen an die Konstante idKunde
     const idKunde = req.body.idKunde
     const kennwort = req.body.kennwort
-<<<<<<< HEAD
     
     console.log(idKunde + " == " + kunde.IdKunde + "&&" + kennwort + " == " + kunde.Kennwort)
 
@@ -128,11 +127,6 @@ app.post('/',(req, res, next) => {
     // entspricht, dann werden die Anweisungen im Rumpf der if-Kontrollstruktur
     // abgearbeitet.
     if(idKunde == kunde.IdKunde && kennwort == kunde.Kennwort){            
-=======
-       
-    
-    if(idKunde === kunde.IdKunde && kennwort === kunde.Kennwort){            
->>>>>>> 0e09dc9cbe36c34a95f91e051b4f49642f26d3b4
         console.log("Der Cookie wird gesetzt:")
         res.cookie('istAngemeldetAls', idKunde)
         res.render('index.ejs', {  
