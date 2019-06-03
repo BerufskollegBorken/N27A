@@ -14,22 +14,27 @@
     <meta name="msapplication-TileColor" content="#ffc40d">
     <meta name="theme-color" content="#ffffff">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">        
-    <title>N27 - Startseite</title>
+    <title>Stammdaten Pflegen</title>
   </head>
   <body>
     <header>
-      <h1>Herzlich Willkommen</h1>    
+      <h1>Konto anlegen</h1>    
       <nav>      
         <a href="/"><i class="fa fa-home" aria-hidden="true"></i></a>                        
         <a href="/login">Logout</a>        
         <a href="/impressum">Impressum</a>
-        <a href="/stammdatenPflegen"><i class="fa fa-id-card-o" aria-hidden="true"></i></a>  -        
+        <a href="/stammdatenPflegen"><i class="fa fa-id-card-o" aria-hidden="true"></i></a>        
         <a href="mailto:stefan.baeumer@berufskolleg-borken.de"> <i class="fa fa-envelope-o"></i></a>
       </nav>   
       <br>
-    </header>    
-    <form>          
-      <button formaction="/kontoAnlegen">Konto anlegen</button>
-    </form>  
+    </header>
+    <form method="POST" action="/stammdatenPflegen">
+        <label>Nachname:</label>
+        <input type="text"  name="nachname">
+        <label>Kennwort:</label>
+        <input type="password" name="kennwort">        
+        <button>Stammdaten Pflegen</button>
+      </form>
+      <label><%= meldung %></label>
   </body>
 </html>
