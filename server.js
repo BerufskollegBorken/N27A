@@ -6,7 +6,6 @@ class Konto{
     }
 }
 
-<<<<<<< HEAD
 // Klassendefinition
 
 class Kunde {
@@ -35,7 +34,6 @@ kunde.Vorname = "Hildegard"
 kunde.Geburtsdatum = "1999-12-31"
 kunde.Adresse = "Berlin"
 
-=======
 class Kunde{
     constructor(){
         this.Vorname
@@ -57,7 +55,6 @@ kunde.Vorname = "Valerie"
 kunde.Geschlecht = "w"
 
 const iban = require('iban')
->>>>>>> 0e09dc9cbe36c34a95f91e051b4f49642f26d3b4
 const express = require('express')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
