@@ -49,8 +49,8 @@ const server = app.listen(process.env.PORT || 3000, () => {
     console.log('Server lauscht auf Port %s', server.address().port)    
 })
 
-// Die app.get('/'...) wird abgearbeitet, wenn die Startseite
-// im Browser aufgerufen wird.
+// Wenn die Startseite im Browser aufgerufen wird, ...
+
 app.get('/',(req, res, next) => {   
 
     let idKunde = req.cookies['istAngemeldetAls']
@@ -66,6 +66,7 @@ app.get('/',(req, res, next) => {
 })
 
 // Wenn die Seite localhost:3000/impressum aufgerufen wird, ...
+
 app.get('/impressum',(req, res, next) => {   
 
     let idKunde = req.cookies['istAngemeldetAls']
