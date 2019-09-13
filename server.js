@@ -39,6 +39,19 @@ const iban = require('iban')
 const express = require('express')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
+const mysql = require('mysql')
+
+const dbVerbindung = mysql.createConnection({
+    host: '10.40.38.110',
+    user: 'placematman',
+    password: 'BKB123456!',
+    db: 'dbn27',
+    port: '3306'
+})
+
+dbVerbindung.connect()
+
+
 const app = express()
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
@@ -159,6 +172,12 @@ app.post('/kontoAnlegen',(req, res, next) => {
         const laenderkennung = "DE"
         konto.Iban = iban.fromBBAN(laenderkennung,bankleitzahl + " " + konto.Kontonummer)
         
+        // Füge das Konto in die MySQL-Datenbank ein
+    
+        dbVerbindung.query('INSERT INTO konto(iban,timestamp,anfangssaldo,kontoart) VALUES ("' + konto.Iban + '",now(),100,"' + konto.Kontoart + '");', function (error, results, fields) {
+            if (error) throw error;
+            console.log('Das Konto wurde erfolgreich angelegt');
+        });
 
         // ... wird die kontoAnlegen.ejs gerendert.
 
