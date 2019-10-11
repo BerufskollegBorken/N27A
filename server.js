@@ -1,3 +1,7 @@
+// Klassendefinition der Klasse Konto. 
+// Die Klasse ist der Bauplan, der alle rele-
+// vanten Eigenschaften enthält.
+
 class Konto{
     constructor(){
         this.Kontonummer
@@ -21,7 +25,10 @@ class Kunde {
     }
 }
 
-// Deklaration und Instanziierung
+// Deklaration (let kunde) und Instanziierung
+// = new Kunde()
+// Bei der Instanzziierung werden Speicher-
+// zellen reserviert.
 
 let kunde = new Kunde()
 
