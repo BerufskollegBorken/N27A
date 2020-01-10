@@ -1,4 +1,4 @@
-# Klausur / Test 2 am 14.1.2020 um 9:10 Uhr
+# Klausur / Test 2 am 14.1.2020 um 9:30 Uhr
 
 1. Fehler finden und auf Papier dokumentieren
 2. alles, was in T1 / K1 relevant war
