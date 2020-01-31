@@ -324,9 +324,9 @@ app.get('/kontoAnzeigen',(req, res, next) => {
         // Hier muss die Datenbank abgefragt werden.
 
         dbVerbindung.connect(function(fehler){
-            dbVerbindung.query('SELECT Anfangssaldo FROM konto WHERE iban = "DE1234";', function (fehler, result, fields) {
+            dbVerbindung.query('SELECT anfangssaldo FROM konto WHERE iban = "DE27270000009999990000";', function (fehler, result) {
                 if (fehler) throw fehler
-                console.log('Der Saldo von DE1234 ist: ' + fields[0].Anfangssaldo)
+                console.log('Der Saldo von DE27270000009999990000 ist: ' + result[0].anfangssaldo)
             })
         })
 
