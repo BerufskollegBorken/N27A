@@ -57,10 +57,24 @@ const dbVerbindung = mysql.createConnection({
 })
 
 dbVerbindung.connect(function(fehler){
+    dbVerbindung.query('CREATE TABLE IF NOT EXISTS kunde(idKunde INT(11), vorname VARCHAR(45), nachname VARCHAR(45), kennwort VARCHAR(45), mail VARCHAR(45), PRIMARY KEY(idKunde));', function (fehler) {
+        if (fehler) throw fehler
+        console.log('Die Tabelle Kunde wurde erfolgreich angelegt.')
+    })
+})
+
+dbVerbindung.connect(function(fehler){
     dbVerbindung.query('CREATE TABLE IF NOT EXISTS konto(iban VARCHAR(22), anfangssaldo DECIMAL(15,2), kontoart VARCHAR(20), timestamp TIMESTAMP, PRIMARY KEY(iban));', function (fehler) {
         if (fehler) throw fehler
         console.log('Die Tabelle konto wurde erfolgreich angelegt.')
     })
+})
+
+// Kunde in die Datenbank schreiben, sofern er noch nicht angelegt ist
+
+dbVerbindung.query('INSERT INTO kunde(idKunde,vorname,nachname,mail,kennwort) VALUES (' + kunde.IdKunde + ',"' + kunde.Vorname + '","' + kunde.Nachname + '","' + kunde.Mail + '","' + kunde.Kennwort + '");', function (fehler) {
+    if (fehler) throw fehler;                                                                                                                       // VALUES(150111,"Hans","Müller","hans@web.de","Geheim!");
+    console.log('Das Konto wurde erfolgreich angelegt');
 })
 
 const app = express()
@@ -188,7 +202,7 @@ app.post('/kontoAnlegen',(req, res, next) => {
         dbVerbindung.query('INSERT INTO konto(iban,anfangssaldo,kontoart,timestamp) VALUES ("' + konto.Iban + '",100,"' + konto.Kontoart + '",NOW());', function (fehler) {
             if (fehler) throw fehler;
             console.log('Das Konto wurde erfolgreich angelegt');
-        });
+        })
 
         // ... wird die kontoAnlegen.ejs gerendert.
 
@@ -309,6 +323,37 @@ app.post('/ueberweisen',(req, res, next) => {
         // Die login.ejs wird gerendert 
         // und als Response
         // an den Browser übergeben.
+        res.render('login.ejs', {                    
+        })    
+    }
+})
+
+app.get('/kontoAnzeigen',(req, res, next) => {   
+
+    let idKunde = req.cookies['istAngemeldetAls']
+    
+    if(idKunde){
+        console.log("Kunde ist angemeldet als " + idKunde)
+        
+        // Hier muss die Datenbank abgefragt werden.
+
+        let kontostand = 10
+
+        dbVerbindung.connect(function(fehler){
+            dbVerbindung.query('SELECT anfangssaldo FROM konto WHERE iban = "DE27270000009999990000";', function (fehler, result) {
+                if (fehler) throw fehler
+                
+                kontostand = result[0].anfangssaldo
+                
+                console.log('Der Saldo von DE27270000009999990000 ist: ' + kontostand)
+                
+            })
+        })
+
+        res.render('kontoAnzeigen.ejs', {    
+            meldung : "Der Saldo von DE27270000009999990000 ist: " + kontostand                          
+        })
+    }else{
         res.render('login.ejs', {                    
         })    
     }
