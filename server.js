@@ -65,7 +65,7 @@ dbVerbindung.connect(function(fehler){
 })
 
 dbVerbindung.connect(function(fehler){
-    dbVerbindung.query('CREATE TABLE IF NOT EXISTS konto(iban VARCHAR(22), anfangssaldo DECIMAL(15,2), kontoart VARCHAR(20), timestamp TIMESTAMP, PRIMARY KEY(iban));', function (fehler) {
+    dbVerbindung.query('CREATE TABLE IF NOT EXISTS konto(iban VARCHAR(22), idKunde INT(11), anfangssaldo DECIMAL(15,2), kontoart VARCHAR(20), timestamp TIMESTAMP, PRIMARY KEY(iban));', function (fehler) {
         if (fehler) throw fehler
         console.log('Die Tabelle konto wurde erfolgreich angelegt.')
     })
@@ -195,6 +195,7 @@ app.post('/kontoAnlegen',(req, res, next) => {
         // Der Wert aus dem Input mit dem Namen 'kontonummer'
         // wird zugewiesen (=) an die Eigenschaft Kontonummer
         // des Objekts namens konto.
+        konto.IdKunde = idKunde
         konto.Kontonummer = req.body.kontonummer
         konto.Kontoart = req.body.kontoart
         const bankleitzahl = 27000000
@@ -203,7 +204,7 @@ app.post('/kontoAnlegen',(req, res, next) => {
         
         // Füge das Konto in die MySQL-Datenbank ein
     
-        dbVerbindung.query('INSERT INTO konto(iban,anfangssaldo,kontoart,timestamp) VALUES ("' + konto.Iban + '",100,"' + konto.Kontoart + '",NOW());', function (fehler) {
+        dbVerbindung.query('INSERT INTO konto(iban, idKunde, anfangssaldo, kontoart, timestamp) VALUES ("' + konto.Iban + '","' + idKunde + '",100,"' + konto.Kontoart + '",NOW());', function (fehler) {
             if (fehler) throw fehler;
             console.log('Das Konto wurde erfolgreich angelegt');
         })
