@@ -34,7 +34,7 @@ let kunde = new Kunde()
 
 // Initialisierung
 
-kunde.IdKunde = 4711
+kunde.IdKunde = 47111
 kunde.Kennwort = "123"
 kunde.Geburtsdatum = "1999-12-31"
 kunde.Nachname = "Müller"
