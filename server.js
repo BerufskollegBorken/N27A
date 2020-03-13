@@ -47,6 +47,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const mysql = require('mysql')
+const validator = require("email-validator");
 
 const dbVerbindung = mysql.createConnection({
     host: '10.40.38.110',
@@ -59,7 +60,11 @@ const dbVerbindung = mysql.createConnection({
 dbVerbindung.connect(function(fehler){
     dbVerbindung.query('CREATE TABLE kunde(idKunde INT(11), vorname VARCHAR(45), nachname VARCHAR(45), kennwort VARCHAR(45), mail VARCHAR(45), PRIMARY KEY(idKunde));', function (fehler) {
         if (fehler) {
-            console.log("Fehler: Tabelle kunde existiert bereits und wird nicht angelegt." )
+            if(fehler.code == "ER_TABLE_EXISTS_ERROR"){
+                console.log("Tabelle kunde existiert bereits und wird nicht angelegt.")
+            }else{
+                console.log("Fehler: " + fehler )
+            }
         }else{
             console.log("Tabelle Kunde erfolgreich angelegt.")
         }
@@ -67,9 +72,16 @@ dbVerbindung.connect(function(fehler){
 })
 
 dbVerbindung.connect(function(fehler){
-    dbVerbindung.query('CREATE TABLE IF NOT EXISTS konto(iban VARCHAR(22), idKunde INT(11), anfangssaldo DECIMAL(15,2), kontoart VARCHAR(20), timestamp TIMESTAMP, PRIMARY KEY(iban));', function (fehler) {
-        if (fehler) throw fehler
-        console.log('Die Tabelle konto wurde erfolgreich angelegt.')
+    dbVerbindung.query('CREATE TABLE konto(iban VARCHAR(22), idKunde INT(11), anfangssaldo DECIMAL(15,2), kontoart VARCHAR(20), timestamp TIMESTAMP, PRIMARY KEY(iban));', function (fehler) {
+        if (fehler) {
+            if(fehler.code == "ER_TABLE_EXISTS_ERROR"){
+                console.log("Tabelle konto existiert bereits und wird nicht angelegt.")
+            }else{
+                console.log("Fehler: " + fehler )
+            }
+        }else{
+            console.log("Tabelle konto erfolgreich angelegt.")
+        }
     })
 })
 
@@ -77,7 +89,11 @@ dbVerbindung.connect(function(fehler){
 
 dbVerbindung.query('INSERT INTO kunde(idKunde,vorname,nachname,mail,kennwort) VALUES (' + kunde.IdKunde + ',"' + kunde.Vorname + '","' + kunde.Nachname + '","' + kunde.Mail + '","' + kunde.Kennwort + '");', function (fehler) {
     if (fehler) {
-        console.log("Kunde mit ID " + kunde.IdKunde + " existiert bereits und wird nicht erneut in DB angelegt." );                                                                                                                       // VALUES(150111,"Hans","Müller","hans@web.de","Geheim!");
+        if(fehler.code == "ER_DUP_ENTRY"){
+            console.log("Kunde mit ID " + kunde.IdKunde + " existiert bereits und wird nicht erneut in DB angelegt." );
+        }else{
+            console.log("Fehler: " + fehler.code)
+        }
     }else{
         console.log('Kunde mit ID ' + kunde.IdKunde + " erfolgreich in DB angelegt.");
     }
@@ -208,9 +224,13 @@ app.post('/kontoAnlegen',(req, res, next) => {
     
         dbVerbindung.query('INSERT INTO konto(iban, idKunde, anfangssaldo, kontoart, timestamp) VALUES ("' + konto.Iban + '","' + idKunde + '",100,"' + konto.Kontoart + '",NOW());', function (fehler) {
             if (fehler) {
-                console.log("Fehler: Vermutlich existiert das Konto mit der IBAN " + konto.Iban + " bereits.")
+                if(fehler.code == "ER_DUP_ENTRY"){
+                    console.log("Konto mit Iban " + konto.Iban + " existiert bereits und wird nicht erneut in DB angelegt." );
+                }else{
+                    console.log("Fehler: " + fehler.code)
+                }
             }else{
-                console.log('Das Konto wurde erfolgreich angelegt');
+                 console.log('Konto mit Iban ' + konto.Iban + " erfolgreich in DB angelegt.");
             }            
         })
 
@@ -256,21 +276,29 @@ app.post('/stammdatenPflegen',(req, res, next) => {
         // Nur, wenn das Input namens nachname nicht leer ist, wird der
         // Nachname neu gesetzt.
 
+        var erfolgsmeldung = "Stammdaten wurden aktualisiert. ";
+
         if(req.body.nachname){
             kunde.Nachname = req.body.nachname
+            erfolgsmeldung += "; Neuer Nachname: " + kunde.Nachname
         }
         
         if(req.body.kennwort){
             kunde.Kennwort = req.body.kennwort
+            erfolgsmeldung += "; Neues Kennwort: " + kunde.Kennwort
         }
 
-        if(req.body.email){
-            kunde.Mail = req.body.email
+        if(req.body.mail){
+            if(validator.validate(req.body.mail)){
+                kunde.Mail = req.body.mail
+                erfolgsmeldung += "; Neue E-Mail: " + kunde.Mail
+            }else{
+                erfolgsmeldung += "; Die E-Mail " + req.body.mail + " ist syntaktisch falsch und wird nicht aktualisiert."    
+            }            
         }
         
         res.render('stammdatenPflegen.ejs', {                              
-            meldung : "Die Stammdaten wurden geändert. Neuer Nachname: " + kunde.Nachname + " Neue Mail: " + kunde.Mail
-            
+            meldung : erfolgsmeldung
         })
     }else{
         // Die login.ejs wird gerendert 
@@ -320,9 +348,16 @@ app.post('/ueberweisen',(req, res, next) => {
         // Füge das Konto in die MySQL-Datenbank ein
     
         dbVerbindung.query('INSERT INTO konto(iban,anfangssaldo,kontoart,timestamp) VALUES ("' + konto.Iban + '",100,"' + konto.Kontoart + '",NOW());', function (fehler) {
-            if (fehler) throw fehler;
-            console.log('Das Konto wurde erfolgreich angelegt');
-        });
+            if (fehler){
+                if(fehler.code == "ER_DUP_ENTRY"){
+                    console.log("Das Konto mit der IBAN " + konto.Iban + " existiert bereits und wird nicht angelegt.")
+                }else{
+                    console.log("Fehler: " + fehler)
+                }                
+            }else{
+                console.log('Das Konto wurde erfolgreich angelegt');
+            }            
+        })
 
         // ... wird die kontoAnlegen.ejs gerendert.
 
