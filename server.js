@@ -1,3 +1,6 @@
+const mysql = require('mysql')
+const env = process.env.NODE_ENV || 'development';
+const config = require('./config')[env];
 // Klassendefinition der Klasse Konto. 
 // Die Klasse ist der Bauplan, der alle rele- 
 // vanten Eigenschaften enthält.
@@ -46,15 +49,14 @@ const iban = require('iban')
 const express = require('express')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
-const mysql = require('mysql')
 const validator = require("email-validator");
 
+
 const dbVerbindung = mysql.createConnection({
-    host: '10.40.38.110',
-    user: 'placematman',
-    password: 'BKB123456!',
-    database: 'dbn27',
-    port: '3306'
+    host: config.database.host,
+    user: config.database.user,
+    password: config.database.password,
+    database: config.database.db
 })
 
 dbVerbindung.connect(function(fehler){
