@@ -1,5 +1,5 @@
 // Klassendefinition der Klasse Konto. 
-// Die Klasse ist der Bauplan, der alle rele-
+// Die Klasse ist der Bauplan, der alle rele- 
 // vanten Eigenschaften enthält.
 
 class Konto{
