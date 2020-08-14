@@ -51,7 +51,6 @@ const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const validator = require("email-validator");
 
-
 const dbVerbindung = mysql.createConnection({
     host: config.database.host,
     user: config.database.user,
