@@ -14,25 +14,29 @@
     <meta name="msapplication-TileColor" content="#ffc40d">
     <meta name="theme-color" content="#ffffff">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">        
-    <title>N27 - Startseite</title>
+    <title>N27 - Zinseszins berechnen</title>
   </head>
   <body>
     <header>
-      <h1>Herzlich Willkommen</h1>    
+      <h1>Zinseszins berechnen</h1>    
       <nav>      
         <a href="/"><i class="fa fa-home" aria-hidden="true"></i></a>                        
         <a href="/login">Logout</a>        
         <a href="/impressum">Impressum</a>
-        <a href="/stammdatenPflegen"><i class="fa fa-id-card-o" aria-hidden="true"></i></a>        
+        <a href="/stammdatenPflegen"><i class="fa fa-id-card-o" aria-hidden="true"></i></a>          
         <a href="mailto:stefan.baeumer@berufskolleg-borken.de"> <i class="fa fa-envelope-o"></i></a>
       </nav>   
       <br>
-    </header>    
-    <form>          
-      <button formaction="/kontoAnlegen">Konto anlegen</button>
-      <button formaction="/ueberweisen">Überweisung tätigen</button>
-      <button formaction="/kontoAnzeigen">Kontostand anzeigen</button>
-      <button formaction="/zinsen">Endkapital ausrechnen</button>
-    </form>  
+    </header>
+    <form method="POST" action="/zinsen">
+        <label>Anfangskapital:</label>
+        <input type="number" name="anfangskapital">
+        <label>Laufzeit:</label>
+        <input type="number" name="laufzeit">
+        <label>Zinssatz:</label>
+        <input type="number" name="zinssatz">        
+        <button>Zinseszins berechnen</button>
+    </form>
+    <label><%= meldung %></label>
   </body>
 </html>

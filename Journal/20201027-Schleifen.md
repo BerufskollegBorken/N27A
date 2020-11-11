@@ -28,7 +28,7 @@ for(var i = 0; i <= 10; i++){
 
 Was passiert im Kopf der for-Schleife:
 
-1. Zunächst wird eine Variable namens i deklariert und mit 1 initialisiert.
+1. Zunächst wird eine Variable namens i deklariert und mit 0 initialisiert.
 2. Der Wert von i wird verglichen mit der zahl 10. Solange i kleiner oder gleich 10 ist, wird der Rumpf der Schleife erneut ausgeführt.
 3. Der Wert von i wird mit jedem Schleifendurchlauf um 1 erhöht.
 

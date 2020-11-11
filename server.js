@@ -1,18 +1,4 @@
 
-console.log("Schleife ausprobieren:")
-
-
-for(var z = 0; z < 2; z++){
-    for(var i = 0; i < 3; i++){
-        console.log(i);        
-    }
-    for(var i = 3; i >= 0; i--){
-        console.log(i);    
-    }
-}
-
-
-
 const mysql = require('mysql')
 const env = process.env.NODE_ENV || 'development';
 const config = require('./config')[env];
@@ -379,6 +365,60 @@ app.post('/ueberweisen',(req, res, next) => {
 
         res.render('ueberweisen.ejs', {                              
             meldung : "Das " + konto.Kontoart + " mit der IBAN " + konto.Iban + " wurde erfolgreich angelegt."
+        })
+    }else{
+        // Die login.ejs wird gerendert 
+        // und als Response
+        // an den Browser übergeben.
+        res.render('login.ejs', {                    
+        })    
+    }
+})
+
+
+app.get('/zinsen',(req, res, next) => {   
+
+    let idKunde = req.cookies['istAngemeldetAls']
+    
+    if(idKunde){
+        console.log("Kunde ist angemeldet als " + idKunde)
+        
+        // ... dann wird kontoAnlegen.ejs gerendert.
+        
+        res.render('zinsen.ejs', {    
+            meldung : ""                          
+        })
+    }else{
+        res.render('login.ejs', {                    
+        })    
+    }
+})
+
+app.post('/zinsen',(req, res, next) => {   
+
+    let idKunde = req.cookies['istAngemeldetAls']
+    
+    if(idKunde){
+        console.log("Kunde ist angemeldet als " + idKunde)
+        
+        var zinssatz = req.body.zinssatz
+        var anfangskapital = req.body.anfangskapital
+        var laufzeit = req.body.laufzeit
+        var endkapital = anfangskapital
+
+        console.log("zinssatz: " + zinssatz)
+        console.log("Anfangskapital: " + anfangskapital)
+        console.log("Laufzeit: " + laufzeit)
+        console.log("Endkapital: " + endkapital)
+
+        for(laufzeit; laufzeit > 0; laufzeit--){
+            endkapital = zinssatz + (endkapital * zinssatz / 100)            
+            console.log("Endkapital: " + endkapital)
+        }
+        
+
+        res.render('zinsen.ejs', {                              
+            meldung : "Der Endbetrag nach " + req.body.laufzeit + " Jahren ist " + endkapital + "€."
         })
     }else{
         // Die login.ejs wird gerendert 
