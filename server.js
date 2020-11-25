@@ -401,7 +401,7 @@ app.post('/zinsen',(req, res, next) => {
     if(idKunde){
         console.log("Kunde ist angemeldet als " + idKunde)
         
-        var zinssatz = req.body.zinssatz
+        var zinssatz = req.body.zinssatz + 1
         var anfangskapital = req.body.anfangskapital
         var laufzeit = req.body.laufzeit
         var endkapital = anfangskapital
