@@ -364,9 +364,8 @@ app.post('/ueberweisen',(req, res, next) => {
         var betrag = req.body.betrag
         var verwendungszweck = req.body.verwendungszweck
         
-        // Kontobewegung einfügen Bitte die Query heraussuchen. 5 Minuten.
+        // Kontobewegung einfügen
     
-
         dbVerbindung.query('INSERT INTO kontobewegung(iban,timestamp,betrag,verwendungszweck) VALUES ("' + iban + '",NOW(),' + betrag + ',"' + verwendungszweck + '");', function (fehler) {
             if (fehler){
                 if(fehler){
