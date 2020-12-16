@@ -87,6 +87,27 @@ dbVerbindung.connect(function(fehler){
     })
 })
 
+// Eigenschaften einer Kontobewegung: iban  VARCHAR(22), betrag DECIMAL(15,2), verwendungszweck VARCHAR(378), timestamp TIMESTAMP 
+// Ein neue Tabelle ist zu erstellen namens kontobewegung.
+// Primary Key: iban, timestamp
+// Foreign Key: iban     // Der FK verhindert, dass eine Kontobewegung zu einer fiktiven iban angelegt wird.    
+
+dbVerbindung.connect(function(fehler){
+    dbVerbindung.query('CREATE TABLE kontobewegung(iban VARCHAR(22), betrag DECIMAL(15,2), verwendungszweck VARCHAR(378), timestamp TIMESTAMP, PRIMARY KEY(iban, timestamp), FOREIGN KEY (iban) REFERENCES konto(iban));', function (fehler) {
+        if (fehler) {
+            if(fehler.code == "ER_TABLE_EXISTS_ERROR"){
+                console.log("Tabelle konto existiert bereits und wird nicht angelegt.")
+            }else{
+                console.log("Fehler: " + fehler )
+            }
+        }else{
+            console.log("Tabelle konto erfolgreich angelegt.")
+        }
+    })
+})
+
+
+
 // Kunde in die Datenbank schreiben, sofern er noch nicht angelegt ist
 
 dbVerbindung.query('INSERT INTO kunde(idKunde,vorname,nachname,mail,kennwort) VALUES (' + kunde.IdKunde + ',"' + kunde.Vorname + '","' + kunde.Nachname + '","' + kunde.Mail + '","' + kunde.Kennwort + '");', function (fehler) {
@@ -334,37 +355,42 @@ app.post('/ueberweisen',(req, res, next) => {
     let idKunde = req.cookies['istAngemeldetAls']
     
     if(idKunde){
+
         console.log("Kunde ist angemeldet als " + idKunde)
         
         let konto = new Konto()
-
-        // Der Wert aus dem Input mit dem Namen 'kontonummer'
-        // wird zugewiesen (=) an die Eigenschaft Kontonummer
-        // des Objekts namens konto.
-        konto.Kontonummer = req.body.kontonummer
-        konto.Kontoart = req.body.kontoart
-        const bankleitzahl = 27000000
-        const laenderkennung = "DE"
-        konto.Iban = iban.fromBBAN(laenderkennung,bankleitzahl + " " + konto.Kontonummer)
         
-        // Füge das Konto in die MySQL-Datenbank ein
+        var iban = req.body.iban
+        var betrag = req.body.betrag
+        var verwendungszweck = req.body.verwendungszweck
+        
+        // Kontobewegung einfügen Bitte die Query heraussuchen. 5 Minuten.
     
-        dbVerbindung.query('INSERT INTO konto(iban,anfangssaldo,kontoart,timestamp) VALUES ("' + konto.Iban + '",100,"' + konto.Kontoart + '",NOW());', function (fehler) {
+
+        dbVerbindung.query('INSERT INTO kontobewegung(iban,timestamp,betrag,verwendungszweck) VALUES ("' + iban + '",NOW(),' + betrag + ',"' + verwendungszweck + '");', function (fehler) {
             if (fehler){
-                if(fehler.code == "ER_DUP_ENTRY"){
-                    console.log("Das Konto mit der IBAN " + konto.Iban + " existiert bereits und wird nicht angelegt.")
-                }else{
-                    console.log("Fehler: " + fehler)
-                }                
+                if(fehler){
+                    console.log("Überweisung auf Konto " + iban + " konnte nicht ausgeführt werden." + fehler)
+                }               
             }else{
-                console.log('Das Konto wurde erfolgreich angelegt');
+                console.log("Überweisung auf Konto " + iban + " erfolgreich durchgeführt.");
+            }            
+        })
+
+        dbVerbindung.query('INSERT INTO kontobewegung(iban,timestamp,betrag,verwendungszweck) VALUES ("' + konto.Iban + '",NOW(),' + -(betrag) + ',"' + verwendungszweck + '");', function (fehler) {
+            if (fehler){
+                if(fehler){
+                    console.log("Abbuchung von Konto " + konto.Iban + " konnte nicht ausgeführt werden." + fehler)
+                }               
+            }else{
+                console.log("Abbuchung von Konto " + konto.Iban + " erfolgreich durchgeführt.");
             }            
         })
 
         // ... wird die kontoAnlegen.ejs gerendert.
 
         res.render('ueberweisen.ejs', {                              
-            meldung : "Das " + konto.Kontoart + " mit der IBAN " + konto.Iban + " wurde erfolgreich angelegt."
+            meldung : "Die Überweisung an " + iban + " wurde erfolgreich durchgeführt."
         })
     }else{
         // Die login.ejs wird gerendert 
