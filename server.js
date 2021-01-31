@@ -2,6 +2,7 @@
 const mysql = require('mysql')
 const env = process.env.NODE_ENV || 'development';
 const config = require('./config')[env];
+
 // Klassendefinition der Klasse Konto. 
 // Die Klasse ist der Bauplan, der alle rele- 
 // vanten Eigenschaften enthält.
