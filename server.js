@@ -1,4 +1,3 @@
-
 const mysql = require('mysql')
 const env = process.env.NODE_ENV || 'development';
 const config = require('./config')[env];
@@ -366,6 +365,9 @@ app.post('/ueberweisen',(req, res, next) => {
         var verwendungszweck = req.body.verwendungszweck
         
         // Kontobewegung einfügen
+
+
+        // 20210203 https://riptutorial.com/mysql/example/25536/store-a-javascript-timestamp-into-a-timestamp-column
     
         dbVerbindung.query('INSERT INTO kontobewegung(iban,timestamp,betrag,verwendungszweck) VALUES ("' + iban + '",NOW(),' + betrag + ',"' + verwendungszweck + '");', function (fehler) {
             if (fehler){
