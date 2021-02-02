@@ -1,6 +1,9 @@
+console.log(process.env.PORT)
+
+
 const mysql = require('mysql')
-const env = process.env.NODE_ENV || 'development';
-const config = require('./config')[env];
+//const env = process.env.NODE_ENV || 'development';
+//const config = require('./config')[env];
 
 // Klassendefinition der Klasse Konto. 
 // Die Klasse ist der Bauplan, der alle rele- 
@@ -53,10 +56,10 @@ const cookieParser = require('cookie-parser')
 const validator = require("email-validator");
 
 const dbVerbindung = mysql.createConnection({
-    host: config.database.host,
-    user: config.database.user,
-    password: config.database.password,
-    database: config.database.db
+    host: '130.255.124.99',
+    user: 'placematman',
+    password: "BKB123456!",
+    database: "dbn27"
 })
 
 dbVerbindung.connect(function(fehler){
@@ -141,8 +144,8 @@ app.get('/',(req, res, next) => {
     let idKunde = req.cookies['istAngemeldetAls']
     
     if(idKunde){
-        console.log("Kunde ist angemeldet als " + idKunde)
-        res.render('index.ejs', {                              
+        res.render('index.ejs', {      
+            meldung : process.env.PORT || 3000       
         })
     }else{
         res.render('login.ejs', {                    
@@ -189,7 +192,7 @@ app.post('/',(req, res, next) => {
     // entspricht, dann werden die Anweisungen im Rumpf der if-Kontrollstruktur
     // abgearbeitet.
     if(idKunde == kunde.IdKunde && kennwort == kunde.Kennwort){            
-        console.log("Der Cookie wird gesetzt:")
+        console.log("Der Cookie wird gesetzt: " + idKunde)
         res.cookie('istAngemeldetAls', idKunde)
         res.render('index.ejs', {  
             kunde : idKunde          
