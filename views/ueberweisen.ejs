@@ -30,7 +30,16 @@
     </header>
     <form method="POST" action="/ueberweisen">
         <label>Meine Iban:</label>
-        <select name="quellIban">
+        
+          <!-- Das select-Tag bietet ein Auswahlmenü. Es können keine Ibans freihändig eingetragen werden.
+          Die von der server.js übergebenen quellkonten werden in einer for-Schleife durchlaufen.
+          Für jedes Quellkonto wird in dem SELECT eine OPTION angelegt.
+
+          i ist die Zählvariable. Nach jedem Schleifendurchlauf wird i um eins erhöht.
+          quellkonten[i] ist dann das erste, zweite usw. Element der Quellkontenliste.
+
+          -->
+        <select name="quellIban"></select>
           <% for(var i=0; i< quellkonten.length; i++) {%>              
             <option value="<%= quellkonten[i].iban %>"><%= quellkonten[i].iban %></option>                  
           <% } %> 

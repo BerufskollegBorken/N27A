@@ -372,16 +372,15 @@ app.post('/ueberweisen',(req, res, next) => {
         
         let konto = new Konto()
         
-        var iban = req.body.iban
+        var quellIban = req.body.quellIban
+        var zielIban = req.body.zielIban
+
         var betrag = req.body.betrag
         var verwendungszweck = req.body.verwendungszweck
         
-        // Kontobewegung einfügen
+        // Kontobewegungen einfügen 
 
-
-        // 20210203 https://riptutorial.com/mysql/example/25536/store-a-javascript-timestamp-into-a-timestamp-column
-    
-        dbVerbindung.query('INSERT INTO kontobewegung(iban,timestamp,betrag,verwendungszweck) VALUES ("' + iban + '",NOW(),' + betrag + ',"' + verwendungszweck + '");', function (fehler) {
+        dbVerbindung.query('INSERT INTO kontobewegung(quellIban, zielIban, timestamp, betrag, verwendungszweck) VALUES ("' + quellIban + '","' + zielIban + '",NOW(),' + betrag + ',"' + verwendungszweck + '");', function (fehler) {
             if (fehler){
                 if(fehler){
                     console.log("Überweisung auf Konto " + iban + " konnte nicht ausgeführt werden." + fehler)
