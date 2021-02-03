@@ -56,7 +56,7 @@ const cookieParser = require('cookie-parser')
 const validator = require("email-validator");
 
 const dbVerbindung = mysql.createConnection({
-    host: '130.255.124.99',
+    host: '10.40.38.110', //130.255.124.99
     user: 'placematman',
     password: "BKB123456!",
     database: "dbn27"
