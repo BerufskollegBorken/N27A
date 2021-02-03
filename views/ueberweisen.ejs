@@ -29,8 +29,19 @@
       <br>
     </header>
     <form method="POST" action="/ueberweisen">
+        <label>Meine Iban:</label>
+        <select name="quellIban">
+          <% for(var i=0; i< quellkonten.length; i++) {%>              
+            <option value="<%= quellkonten[i].iban %>"><%= quellkonten[i].iban %></option>                  
+          <% } %> 
+        </select>
         <label>Iban des Empfängers:</label>
-        <input type="text" name="iban" pattern="[A-Z0-9]{22}" title="Bitte exakt 22 Zeichen eingeben!">
+        <select name="zielIban">
+          <option value="volvo">Volvo</option>
+          <option value="saab">Saab</option>
+          <option value="mercedes">Mercedes</option>
+          <option value="audi">Audi</option>
+        </select>
         <label>Betrag:</label>
         <input type="number" name="betrag">
         <label>Verwendungszweck:</label>

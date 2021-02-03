@@ -1,6 +1,3 @@
-console.log(process.env.PORT)
-
-
 const mysql = require('mysql')
 //const env = process.env.NODE_ENV || 'development';
 //const config = require('./config')[env];
@@ -93,10 +90,12 @@ dbVerbindung.connect(function(fehler){
 // Eigenschaften einer Kontobewegung: iban  VARCHAR(22), betrag DECIMAL(15,2), verwendungszweck VARCHAR(378), timestamp TIMESTAMP 
 // Ein neue Tabelle ist zu erstellen namens kontobewegung.
 // Primary Key: iban, timestamp
-// Foreign Key: iban     // Der FK verhindert, dass eine Kontobewegung zu einer fiktiven iban angelegt wird.    
+// Foreign Key: iban     // Der FK verhindert, dass eine Kontobewegung zu einer fiktiven iban angelegt wird.   
+                        // Durch die Foreign Key-Angabe wird verhindert, dass ein Konto gelöscht wird, zu dem es noch Kontobewegungen gibt.
+
 
 dbVerbindung.connect(function(fehler){
-    dbVerbindung.query('CREATE TABLE kontobewegung(iban VARCHAR(22), betrag DECIMAL(15,2), verwendungszweck VARCHAR(378), timestamp TIMESTAMP, PRIMARY KEY(iban, timestamp), FOREIGN KEY (iban) REFERENCES konto(iban));', function (fehler) {
+    dbVerbindung.query('CREATE TABLE kontobewegung(quellIban VARCHAR(22), zielIban VARCHAR(22), betrag DECIMAL(15,2), verwendungszweck VARCHAR(378), timestamp TIMESTAMP, PRIMARY KEY(quellIban, timestamp), FOREIGN KEY (quellIban) REFERENCES konto(iban));', function (fehler) {
         if (fehler) {
             if(fehler.code == "ER_TABLE_EXISTS_ERROR"){
                 console.log("Tabelle konto existiert bereits und wird nicht angelegt.")
@@ -344,8 +343,18 @@ app.get('/ueberweisen',(req, res, next) => {
         
         // ... dann wird kontoAnlegen.ejs gerendert.
         
-        res.render('ueberweisen.ejs', {    
-            meldung : ""                          
+        dbVerbindung.connect(function(fehler){
+            dbVerbindung.query('SELECT iban FROM konto WHERE idKunde = "' + idKunde + '";', function (fehler, result) {
+                if (fehler) throw fehler
+                
+                console.log(result)
+        
+                res.render('ueberweisen.ejs', {    
+                    meldung : "",
+                         quellkonten : result,
+                         zielkonten : ""                     
+                })
+            })
         })
     }else{
         res.render('login.ejs', {                    
