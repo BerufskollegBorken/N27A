@@ -74,7 +74,7 @@ dbVerbindung.connect(function(fehler){
 })
 
 dbVerbindung.connect(function(fehler){
-    dbVerbindung.query('CREATE TABLE konto(iban VARCHAR(22), idKunde INT(11), anfangssaldo DECIMAL(15,2), kontoart VARCHAR(20), timestamp TIMESTAMP, PRIMARY KEY(iban));', function (fehler) {
+    dbVerbindung.query('CREATE TABLE konto(iban VARCHAR(22), idKunde INT(11), kontoart VARCHAR(20), timestamp TIMESTAMP, PRIMARY KEY(iban));', function (fehler) {
         if (fehler) {
             if(fehler.code == "ER_TABLE_EXISTS_ERROR"){
                 console.log("Tabelle konto existiert bereits und wird nicht angelegt.")
@@ -98,12 +98,12 @@ dbVerbindung.connect(function(fehler){
     dbVerbindung.query('CREATE TABLE kontobewegung(quellIban VARCHAR(22), zielIban VARCHAR(22), betrag DECIMAL(15,2), verwendungszweck VARCHAR(378), timestamp TIMESTAMP, PRIMARY KEY(quellIban, timestamp), FOREIGN KEY (quellIban) REFERENCES konto(iban));', function (fehler) {
         if (fehler) {
             if(fehler.code == "ER_TABLE_EXISTS_ERROR"){
-                console.log("Tabelle konto existiert bereits und wird nicht angelegt.")
+                console.log("Tabelle kontobewegung existiert bereits und wird nicht angelegt.")
             }else{
                 console.log("Fehler: " + fehler )
             }
         }else{
-            console.log("Tabelle konto erfolgreich angelegt.")
+            console.log("Tabelle kontobewegung erfolgreich angelegt.")
         }
     })
 })
@@ -247,7 +247,7 @@ app.post('/kontoAnlegen',(req, res, next) => {
         
         // Füge das Konto in die MySQL-Datenbank ein
     
-        dbVerbindung.query('INSERT INTO konto(iban, idKunde, anfangssaldo, kontoart, timestamp) VALUES ("' + konto.Iban + '","' + idKunde + '",100,"' + konto.Kontoart + '",NOW());', function (fehler) {
+        dbVerbindung.query('INSERT INTO konto(iban, idKunde, kontoart, timestamp) VALUES ("' + konto.Iban + '","' + idKunde + '","' + konto.Kontoart + '",NOW());', function (fehler) {
             if (fehler) {
                 if(fehler.code == "ER_DUP_ENTRY"){
                     console.log("Konto mit Iban " + konto.Iban + " existiert bereits und wird nicht erneut in DB angelegt." );
@@ -334,25 +334,47 @@ app.post('/stammdatenPflegen',(req, res, next) => {
     }
 })
 
+// Die Funktion wird aufgerufen, wenn die Seite ueberweisen im Browser aufgerufen wird.
+
 app.get('/ueberweisen',(req, res, next) => {   
+
+    // Der Cookie mit dem Namen 'istAngemeldetAls' wird abgefragt und der Variablen idKunde zugewiesen.
 
     let idKunde = req.cookies['istAngemeldetAls']
     
+    // Wenn idKunde ungleich leer oder null, dann ist der Wert von idKunde == true
+
     if(idKunde){
         console.log("Kunde ist angemeldet als " + idKunde)
         
-        // ... dann wird kontoAnlegen.ejs gerendert.
-        
+        // Es wird eine neue Variable deklariert namens quellkonten. Die Variable lebt innerhalb der if(idKunde)-Kontrollstruktur.
+
+        let quellkonten
+
         dbVerbindung.connect(function(fehler){
-            dbVerbindung.query('SELECT iban FROM konto WHERE idKunde = "' + idKunde + '";', function (fehler, result) {
+            dbVerbindung.query('SELECT iban FROM konto WHERE idKunde = "' + idKunde + '";', function (fehler, quellkontenResult) {
                 if (fehler) throw fehler
                 
-                console.log(result)
+                console.log(quellkontenResult)
         
+                // Der neuen Varablen quellkonten wird der Result aus der Datenbankabfrage zugewiesen
+
+                quellkonten = quellkontenResult
+            })
+        })
+
+        dbVerbindung.connect(function(fehler){
+            dbVerbindung.query('SELECT iban FROM konto;', function (fehler, zielkontenResult) {
+                if (fehler) throw fehler
+                
+                console.log(zielkontenResult)
+        
+                // Die ueberweisen-Seite wid mit den übergebeben quellkonten und zielkonten an den Browser übergeben.
+
                 res.render('ueberweisen.ejs', {    
                     meldung : "",
-                         quellkonten : result,
-                         zielkonten : ""                     
+                         quellkonten : quellkonten,
+                         zielkonten : zielkontenResult                     
                 })
             })
         })
@@ -362,6 +384,8 @@ app.get('/ueberweisen',(req, res, next) => {
     }
 })
 
+// Die app.post wird abgearbeitet, wenn der Button auf dem Formular gedrückt wird.
+
 app.post('/ueberweisen',(req, res, next) => {   
 
     let idKunde = req.cookies['istAngemeldetAls']
@@ -370,40 +394,32 @@ app.post('/ueberweisen',(req, res, next) => {
 
         console.log("Kunde ist angemeldet als " + idKunde)
         
-        let konto = new Konto()
-        
+        // Die quelliban und zieliban wird "requestet", d. h. beim Browser angefragt und den Variablen zugewiesen
+
         var quellIban = req.body.quellIban
         var zielIban = req.body.zielIban
 
         var betrag = req.body.betrag
         var verwendungszweck = req.body.verwendungszweck
         
+        console.log("Überweisung wird ausgeführt: " + quellIban + " -> " + zielIban + "| Betrag: " + betrag + " | Vz:" + verwendungszweck)
+
         // Kontobewegungen einfügen 
 
         dbVerbindung.query('INSERT INTO kontobewegung(quellIban, zielIban, timestamp, betrag, verwendungszweck) VALUES ("' + quellIban + '","' + zielIban + '",NOW(),' + betrag + ',"' + verwendungszweck + '");', function (fehler) {
             if (fehler){
                 if(fehler){
-                    console.log("Überweisung auf Konto " + iban + " konnte nicht ausgeführt werden." + fehler)
+                    console.log("Überweisung auf Konto " + zielIban + " konnte nicht ausgeführt werden." + fehler)
                 }               
             }else{
-                console.log("Überweisung auf Konto " + iban + " erfolgreich durchgeführt.");
-            }            
-        })
-
-        dbVerbindung.query('INSERT INTO kontobewegung(iban,timestamp,betrag,verwendungszweck) VALUES ("' + konto.Iban + '",NOW(),' + -(betrag) + ',"' + verwendungszweck + '");', function (fehler) {
-            if (fehler){
-                if(fehler){
-                    console.log("Abbuchung von Konto " + konto.Iban + " konnte nicht ausgeführt werden." + fehler)
-                }               
-            }else{
-                console.log("Abbuchung von Konto " + konto.Iban + " erfolgreich durchgeführt.");
+                console.log("Überweisung auf Konto " + zielIban + " erfolgreich durchgeführt.");
             }            
         })
 
         // ... wird die kontoAnlegen.ejs gerendert.
 
-        res.render('ueberweisen.ejs', {                              
-            meldung : "Die Überweisung an " + iban + " wurde erfolgreich durchgeführt."
+        res.render('index.ejs', {                              
+            meldung : "Die Überweisung an " + zielIban + " wurde erfolgreich durchgeführt."
         })
     }else{
         // Die login.ejs wird gerendert 
@@ -477,23 +493,58 @@ app.get('/kontoAnzeigen',(req, res, next) => {
         
         // Hier muss die Datenbank abgefragt werden.
 
-        let kontostand = 10
-
         dbVerbindung.connect(function(fehler){
-            dbVerbindung.query('SELECT anfangssaldo FROM konto WHERE idKunde = "' + idKunde + '";', function (fehler, result) {
+            dbVerbindung.query('SELECT iban FROM konto WHERE idKunde = "' + idKunde + '";', function (fehler, result) {
                 if (fehler) throw fehler
                 
-                kontostand = result[0].anfangssaldo
-                
-                console.log('Der Saldo von DE27270000009999990000 ist: ' + kontostand)
-                
+                console.log(result) 
+          
+                res.render('kontoAnzeigen.ejs', {    
+                    konten : result
+                })
             })
         })
+    }else{
+        res.render('login.ejs', {                    
+        })    
+    }
+})
 
-        res.render('kontoAnzeigen.ejs', {    
-            meldung : "Der Saldo von DE27270000009999990000 ist: " + kontostand                          
+app.post('/kontoAnzeigen',(req, res, next) => {   
+
+    let idKunde = req.cookies['istAngemeldetAls']
+    
+    if(idKunde){
+
+        console.log("Kunde ist angemeldet als " + idKunde)
+        
+        // Die Iban wird requestet         
+
+        var quellIban = req.body.iban
+                
+        console.log("Konto " + iban + " wird abgefragt.")
+
+        // Kontobewegungen einfügen 
+
+        dbVerbindung.query('INSERT INTO kontobewegung(quellIban, zielIban, timestamp, betrag, verwendungszweck) VALUES ("' + quellIban + '","' + zielIban + '",NOW(),' + betrag + ',"' + verwendungszweck + '");', function (fehler) {
+            if (fehler){
+                if(fehler){
+                    console.log("Überweisung auf Konto " + zielIban + " konnte nicht ausgeführt werden." + fehler)
+                }               
+            }else{
+                console.log("Überweisung auf Konto " + zielIban + " erfolgreich durchgeführt.");
+            }            
+        })
+
+        // ... wird die kontoAnlegen.ejs gerendert.
+
+        res.render('index.ejs', {                              
+            meldung : "Die Überweisung an " + zielIban + " wurde erfolgreich durchgeführt."
         })
     }else{
+        // Die login.ejs wird gerendert 
+        // und als Response
+        // an den Browser übergeben.
         res.render('login.ejs', {                    
         })    
     }

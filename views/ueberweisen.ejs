@@ -39,17 +39,16 @@
           quellkonten[i] ist dann das erste, zweite usw. Element der Quellkontenliste.
 
           -->
-        <select name="quellIban"></select>
+        <select name="quellIban">
           <% for(var i=0; i< quellkonten.length; i++) {%>              
             <option value="<%= quellkonten[i].iban %>"><%= quellkonten[i].iban %></option>                  
           <% } %> 
         </select>
         <label>Iban des Empfängers:</label>
         <select name="zielIban">
-          <option value="volvo">Volvo</option>
-          <option value="saab">Saab</option>
-          <option value="mercedes">Mercedes</option>
-          <option value="audi">Audi</option>
+          <% for(var i=0; i< zielkonten.length; i++) {%>              
+            <option value="<%= zielkonten[i].iban %>"><%= zielkonten[i].iban %></option>                  
+          <% } %> 
         </select>
         <label>Betrag:</label>
         <input type="number" name="betrag">

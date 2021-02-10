@@ -28,11 +28,13 @@
       </nav>   
       <br>
     </header>
-    
-    <!-- 
-    meldung ist eine Variable, die zur Laufzeit den Wert des
-    Kontostands annimmt.
-    -->
-    <label><%= meldung %></label>
+    <form method="POST" action="/kontoAnzeigen"></form>
+    <select name="iban">
+      <% for(var i=0; i< konten.length; i++) {%>              
+        <option value="<%= konten[i].iban %>"><%= konten[i].iban %></option>                  
+      <% } %> 
+    </select>
+    <button>Kontostand jetzt anzeigen</button>
+  </form>
   </body>
 </html>
