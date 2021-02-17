@@ -194,7 +194,8 @@ app.post('/',(req, res, next) => {
         console.log("Der Cookie wird gesetzt: " + idKunde)
         res.cookie('istAngemeldetAls', idKunde)
         res.render('index.ejs', {  
-            kunde : idKunde          
+            kunde : idKunde,
+            meldung : "Datenbank ist verbunden."          
         })
     }else{            
         console.log("Der Cookie wird gelöscht")
@@ -402,7 +403,7 @@ app.post('/ueberweisen',(req, res, next) => {
         var betrag = req.body.betrag
         var verwendungszweck = req.body.verwendungszweck
         
-        console.log("Überweisung wird ausgeführt: " + quellIban + " -> " + zielIban + "| Betrag: " + betrag + " | Vz:" + verwendungszweck)
+        console.log("Überweisung wird ausgeführt: " + quellIban + " -> " + zielIban + "| Betrag: " + Math.abs(betrag) + " | Vz:" + verwendungszweck)
 
         // Kontobewegungen einfügen 
 
@@ -497,8 +498,6 @@ app.get('/kontoAnzeigen',(req, res, next) => {
             dbVerbindung.query('SELECT iban FROM konto WHERE idKunde = "' + idKunde + '";', function (fehler, result) {
                 if (fehler) throw fehler
                 
-                console.log(result) 
-          
                 res.render('kontoAnzeigen.ejs', {    
                     konten : result
                 })
@@ -518,28 +517,35 @@ app.post('/kontoAnzeigen',(req, res, next) => {
 
         console.log("Kunde ist angemeldet als " + idKunde)
         
-        // Die Iban wird requestet         
+        // Die Iban wird requestet       
 
-        var quellIban = req.body.iban
-                
+        var iban = req.body.iban
+        var kontostand = 0     
         console.log("Konto " + iban + " wird abgefragt.")
 
-        // Kontobewegungen einfügen 
+        // Kontobewegungen einfügen
 
-        dbVerbindung.query('INSERT INTO kontobewegung(quellIban, zielIban, timestamp, betrag, verwendungszweck) VALUES ("' + quellIban + '","' + zielIban + '",NOW(),' + betrag + ',"' + verwendungszweck + '");', function (fehler) {
-            if (fehler){
-                if(fehler){
-                    console.log("Überweisung auf Konto " + zielIban + " konnte nicht ausgeführt werden." + fehler)
-                }               
-            }else{
-                console.log("Überweisung auf Konto " + zielIban + " erfolgreich durchgeführt.");
-            }            
-        })
+        dbVerbindung.query('SELECT betrag FROM kontobewegung WHERE quelliban = "' + iban + '";', function (fehler, result) {
+            if (fehler) throw fehler
+            
+            for(var i = 0;i < result.length;i++){                
+                kontostand = kontostand - result[i].betrag                
+            }
 
-        // ... wird die kontoAnlegen.ejs gerendert.
+            dbVerbindung.query('SELECT betrag FROM kontobewegung WHERE zieliban = "' + iban + '";', function (fehler, result) {
+                if (fehler) throw fehler
+                
+                for(var i = 0;i < result.length;i++){                
+                    kontostand = kontostand + result[i].betrag                
+                }
+                console.log("Kontostand der Iban " + iban + " ist: " + kontostand + ".")
 
-        res.render('index.ejs', {                              
-            meldung : "Die Überweisung an " + zielIban + " wurde erfolgreich durchgeführt."
+                // ... wird die kontoAnlegen.ejs gerendert.
+        
+                res.render('index.ejs', {                              
+                    meldung : "Kontostand des Kontos mit der Iban " + iban + " ist: " + kontostand + " €."
+                })
+            })
         })
     }else{
         // Die login.ejs wird gerendert 

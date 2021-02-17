@@ -32,7 +32,10 @@
         <label>Kontonummer:</label>
         <input type="text" name="kontonummer" pattern="[0-9]{10}" title="Bitte die SchülerID eingeben und mit 4 Nullen auffüllen. Beispiel: 1501230000!">
         <label>Kontoart:</label>
-        <input type="text" name="kontoart">        
+        <select name="kontoart">
+          <option value="Girokonto">Girokonto</option>
+          <option value="Sparkonto">Sparkonto</option>
+        </select>
         <button>Konto anlegen</button>
     </form>
       <label><%= meldung %></label>

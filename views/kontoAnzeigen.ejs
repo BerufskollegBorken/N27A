@@ -28,13 +28,13 @@
       </nav>   
       <br>
     </header>
-    <form method="POST" action="/kontoAnzeigen"></form>
-    <select name="iban">
-      <% for(var i=0; i< konten.length; i++) {%>              
-        <option value="<%= konten[i].iban %>"><%= konten[i].iban %></option>                  
-      <% } %> 
-    </select>
-    <button>Kontostand jetzt anzeigen</button>
-  </form>
+    <form method="POST" action="/kontoAnzeigen">
+      <select name="iban">
+        <% for(var i=0; i< konten.length; i++) {%>              
+          <option value="<%= konten[i].iban %>"><%= konten[i].iban %></option>                  
+        <% } %> 
+      </select>
+      <button>Kontostand jetzt anzeigen</button>
+    </form>
   </body>
 </html>
