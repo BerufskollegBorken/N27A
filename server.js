@@ -46,7 +46,20 @@ kunde.Nachname = "Müller"
 kunde.Vorname = "Hildegard"
 kunde.Geschlecht = "w"
 kunde.Mail = "h.mueller@web.de"
+
+// iban ist ein Modul, das wir uns in das Programm installiert haben:
+// npm install iban
+// Eine Konstante wird erstellt. Die Konstante heißt iban.
+// Die Konstente lebt während der ganzen Laufzeit des Programms.
+// Die Konstante iban ist ein Objekt, mit möglicherweise vielen Eigenschaften, Funtkionen usw.
+// iban stellt im Programm Funktionalitten zur Verfügung: 
+// * Umwandlung der Kontonummer nach IBAN.
+// * Validierung einer IBAN.
+
 const iban = require('iban')
+
+console.log(iban)
+
 const express = require('express')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
@@ -241,30 +254,42 @@ app.post('/kontoAnlegen',(req, res, next) => {
         // des Objekts namens konto.
         konto.IdKunde = idKunde
         konto.Kontonummer = req.body.kontonummer
-        konto.Kontoart = req.body.kontoart
-        const bankleitzahl = 27000000
-        const laenderkennung = "DE"
-        konto.Iban = iban.fromBBAN(laenderkennung,bankleitzahl + " " + konto.Kontonummer)
         
-        // Füge das Konto in die MySQL-Datenbank ein
-    
-        dbVerbindung.query('INSERT INTO konto(iban, idKunde, kontoart, timestamp) VALUES ("' + konto.Iban + '","' + idKunde + '","' + konto.Kontoart + '",NOW());', function (fehler) {
-            if (fehler) {
-                if(fehler.code == "ER_DUP_ENTRY"){
-                    console.log("Konto mit Iban " + konto.Iban + " existiert bereits und wird nicht erneut in DB angelegt." );
+        if(konto.Kontonummer == ""){
+            res.render('kontoAnlegen.ejs', {                              
+                meldung : "Zum Kontoanlegen bitte Kontonummer angeben!"
+            })                             
+        }else{
+            konto.Kontoart = req.body.kontoart
+            const bankleitzahl = 27000000
+            const laenderkennung = "DE"
+            konto.Iban = iban.fromBBAN(laenderkennung,bankleitzahl + " " + konto.Kontonummer)
+            
+            // Füge das Konto in die MySQL-Datenbank ein
+        
+            dbVerbindung.query('INSERT INTO konto(iban, idKunde, kontoart, timestamp) VALUES ("' + konto.Iban + '","' + idKunde + '","' + konto.Kontoart + '",NOW());', function (fehler) {
+                if (fehler) {
+                    if(fehler.code == "ER_DUP_ENTRY"){
+                        console.log("Konto mit Iban " + konto.Iban + " existiert bereits und wird nicht erneut in DB angelegt." );
+                        // ... wird die kontoAnlegen.ejs gerendert.
+
+                        res.render('kontoAnlegen.ejs', {                              
+                            meldung : "Konto mit Iban " + konto.Iban + " existiert bereits und wird nicht erneut in DB angelegt." 
+                        })
+                    }else{
+                        console.log("Fehler: " + fehler.code)
+                        res.render('kontoAnlegen.ejs', {                              
+                            meldung : "Sonstiger Fehler: " + fehler.code
+                        })
+                    }
                 }else{
-                    console.log("Fehler: " + fehler.code)
-                }
-            }else{
-                 console.log('Konto mit Iban ' + konto.Iban + " erfolgreich in DB angelegt.");
-            }            
-        })
-
-        // ... wird die kontoAnlegen.ejs gerendert.
-
-        res.render('kontoAnlegen.ejs', {                              
-            meldung : "Das " + konto.Kontoart + " mit der IBAN " + konto.Iban + " wurde erfolgreich angelegt."
-        })
+                    console.log("Konto mit Iban " + konto.Iban + " erfolgreich in DB angelegt.");    
+                    res.render('kontoAnlegen.ejs', {                              
+                        meldung : "Konto mit Iban " + konto.Iban + " erfolgreich in DB angelegt."
+                    })                             
+                }            
+            })
+        }
     }else{
         // Die login.ejs wird gerendert 
         // und als Response
@@ -400,28 +425,50 @@ app.post('/ueberweisen',(req, res, next) => {
         var quellIban = req.body.quellIban
         var zielIban = req.body.zielIban
 
-        var betrag = req.body.betrag
-        var verwendungszweck = req.body.verwendungszweck
-        
-        console.log("Überweisung wird ausgeführt: " + quellIban + " -> " + zielIban + "| Betrag: " + Math.abs(betrag) + " | Vz:" + verwendungszweck)
+        // Wenn Quell- und Zieliban gleich sind, wird eine Meldung gerendert.
 
-        // Kontobewegungen einfügen 
+        if(quellIban === zielIban){
+            res.render('index.ejs', {                              
+                meldung : "Die Quelliban und die Zieliban dürfen nicht übereinstimmen."
+            })    
+        }else{
+            var betrag = req.body.betrag
 
-        dbVerbindung.query('INSERT INTO kontobewegung(quellIban, zielIban, timestamp, betrag, verwendungszweck) VALUES ("' + quellIban + '","' + zielIban + '",NOW(),' + betrag + ',"' + verwendungszweck + '");', function (fehler) {
-            if (fehler){
-                if(fehler){
-                    console.log("Überweisung auf Konto " + zielIban + " konnte nicht ausgeführt werden." + fehler)
-                }               
+            if(betrag < 0){
+                res.render('index.ejs', {                              
+                    meldung : "Bitte nur positive Eurobeträge eingeben."
+                })    
             }else{
-                console.log("Überweisung auf Konto " + zielIban + " erfolgreich durchgeführt.");
-            }            
-        })
+                var verwendungszweck = req.body.verwendungszweck
+            
+                if(verwendungszweck == ""){
+                    res.render('index.ejs', {                              
+                        meldung : "Bitte einen Verwendungszweck eingeben."
+                    })  
+                }else{
 
-        // ... wird die kontoAnlegen.ejs gerendert.
+                    console.log("Überweisung wird ausgeführt: " + quellIban + " -> " + zielIban + "| Betrag: " + Math.abs(betrag) + " | Vz:" + verwendungszweck)
 
-        res.render('index.ejs', {                              
-            meldung : "Die Überweisung an " + zielIban + " wurde erfolgreich durchgeführt."
-        })
+                    // Kontobewegungen einfügen 
+    
+                    dbVerbindung.query('INSERT INTO kontobewegung(quellIban, zielIban, timestamp, betrag, verwendungszweck) VALUES ("' + quellIban + '","' + zielIban + '",NOW(),' + betrag + ',"' + verwendungszweck + '");', function (fehler) {
+                        if (fehler){
+                            if(fehler){
+                                console.log("Überweisung auf Konto " + zielIban + " konnte nicht ausgeführt werden." + fehler)
+                            }               
+                        }else{
+                            console.log("Überweisung auf Konto " + zielIban + " erfolgreich durchgeführt.");
+                        }            
+                    })
+    
+                    // ... wird die kontoAnlegen.ejs gerendert.
+    
+                    res.render('index.ejs', {                              
+                        meldung : "Die Überweisung an " + zielIban + " wurde erfolgreich durchgeführt."
+                    })
+                }                
+            }
+        }
     }else{
         // Die login.ejs wird gerendert 
         // und als Response
@@ -457,7 +504,7 @@ app.post('/zinsen',(req, res, next) => {
     if(idKunde){
         console.log("Kunde ist angemeldet als " + idKunde)
         
-        var zinssatz = req.body.zinssatz + 1
+        var zinssatz = parseFloat(req.body.zinssatz + 1)
         var anfangskapital = req.body.anfangskapital
         var laufzeit = req.body.laufzeit
         var endkapital = anfangskapital
@@ -466,6 +513,10 @@ app.post('/zinsen',(req, res, next) => {
         console.log("Anfangskapital: " + anfangskapital)
         console.log("Laufzeit: " + laufzeit)
         console.log("Endkapital: " + endkapital)
+
+        // Wenn rechts oder links vom Plus-Operator ein String steht, wird der Plus-Operator eine Verkettung durchführen.
+        // Wenn links und rechts eine Zahl steht, wird eine Addition vorgenommen.
+        // Die Zahlen aus dem Request sind Strings. Also müssen sie erst konvertiert werden.
 
         for(laufzeit; laufzeit > 0; laufzeit--){
             endkapital = zinssatz + (endkapital * zinssatz / 100)            
