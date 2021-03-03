@@ -1,3 +1,4 @@
+
 const mysql = require('mysql')
 //const env = process.env.NODE_ENV || 'development';
 //const config = require('./config')[env];
@@ -57,8 +58,6 @@ kunde.Mail = "h.mueller@web.de"
 // * Validierung einer IBAN.
 
 const iban = require('iban')
-
-console.log(iban)
 
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -137,6 +136,9 @@ dbVerbindung.query('INSERT INTO kunde(idKunde,vorname,nachname,mail,kennwort) VA
     }
 })
 
+// Die Funktionalitäten des weather-Moduls werden der Konstanten weather zugewiesen.
+const weather = require('weather-js');
+
 const app = express()
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
@@ -154,16 +156,63 @@ const server = app.listen(process.env.PORT || 3000, () => {
 app.get('/',(req, res, next) => {   
 
     let idKunde = req.cookies['istAngemeldetAls']
-    
+
     if(idKunde){
-        res.render('index.ejs', {      
-            meldung : process.env.PORT || 3000       
-        })
+ 
+        // Die Funktion find() gibt das Wetter zu den Angaben in den runden Klammern zurück.
+        weather.find({search: 'Berlin', degreeType: 'C'}, function(err, result) {
+            if(err) console.log(err);
+    
+            // stringify ist eine Funktion, die auf das JSON-Objekt aufgerufen den result in einem
+            // langen String zurückgibt. 
+            console.log(JSON.stringify(result, null, 2));
+
+            console.log("Der ganze Result: " + result)
+            // Der Result ist eine Liste von Objekten. Wenn der angegebene Ortsname mehrfach existiert, hat die Liste mehr als einen Eintrag.
+            console.log("Vom ersten Element der Name des Orts " + result[0].location.name);
+            console.log("Vom ersten Element die aktuelle Temperatur :" + result[0].current.temperature);
+ 
+            res.render('index.ejs', {    
+                ort : "Borken",
+                meldungWetter : result[0].location.name + " " + result[0].current.temperature + " °" + result[0].location.degreetype,  
+                meldung : process.env.PORT || 3000       
+            }) 
+        });        
     }else{
         res.render('login.ejs', {                    
         })    
     }
 })
+
+app.post('/',(req, res, next) => {   
+
+    let idKunde = req.cookies['istAngemeldetAls']
+    
+    if(idKunde){
+        console.log("Kunde ist angemeldet als " + idKunde)
+        
+        let ort = req.body.ort
+        
+        weather.find({search: ort, degreeType: 'C'}, function(err, result) {
+            if(err) console.log(err);
+    
+            res.render('index.ejs', {    
+                ort : result[0].location.name,
+                meldungWetter : result[0].location.name + " " + result[0].current.temperature + " °" + result[0].location.degreetype,  
+                meldung : process.env.PORT || 3000       
+            }) 
+        });        
+    }else{
+        // Die login.ejs wird gerendert 
+        // und als Response
+        // an den Browser übergeben.
+        res.render('login.ejs', {                    
+        })    
+    }
+})
+
+
+
 
 // Wenn die Seite localhost:3000/impressum aufgerufen wird, ...
 
@@ -606,3 +655,4 @@ app.post('/kontoAnzeigen',(req, res, next) => {
         })    
     }
 })
+
