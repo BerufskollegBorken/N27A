@@ -185,32 +185,77 @@ app.get('/',(req, res, next) => {
 })
 
 app.post('/',(req, res, next) => {   
-
+    
+    console.log("app.post(/...")
+    
     let idKunde = req.cookies['istAngemeldetAls']
     
     if(idKunde){
-        console.log("Kunde ist angemeldet als " + idKunde)
-        
+        console.log("Der Cookie wird gesetzt: " + idKunde)
+        res.cookie('istAngemeldetAls', idKunde)
+
         let ort = req.body.ort
-        
+
+        if(!ort){
+            ort = "Borken"
+        }
+
         weather.find({search: ort, degreeType: 'C'}, function(err, result) {
             if(err) console.log(err);
     
             res.render('index.ejs', {    
                 ort : result[0].location.name,
-                meldungWetter : result[0].location.name + " " + result[0].current.temperature + " °" + result[0].location.degreetype,  
+                meldungWetter :  result[0].current.temperature + " °" + result[0].location.degreetype,  
                 meldung : process.env.PORT || 3000       
             }) 
         });        
-    }else{
-        // Die login.ejs wird gerendert 
-        // und als Response
-        // an den Browser übergeben.
+    }else{            
+        console.log("Der Cookie wird gelöscht")
+        res.cookie('istAngemeldetAls','')
         res.render('login.ejs', {                    
-        })    
+        })
     }
 })
 
+app.post('/login',(req, res, next) => {   
+    
+    // Der Wert des Inputs mit dem name = "idkunde" wird über
+    // den Request zugewiesen an die Konstante idKunde
+    const idKunde = req.body.idKunde
+    const kennwort = req.body.kennwort
+    
+    console.log(idKunde + " == " + kunde.IdKunde + "&&" + kennwort + " == " + kunde.Kennwort)
+
+    // Wenn der Wert von idKunde dem Wert der Eigenschaft kunde.IdKunde
+    // entspricht UND der Wert von kennwort der Eigenschaft kunde.Kennwort
+    // entspricht, dann werden die Anweisungen im Rumpf der if-Kontrollstruktur
+    // abgearbeitet.
+    if(idKunde == kunde.IdKunde && kennwort == kunde.Kennwort){            
+        console.log("Der Cookie wird gesetzt: " + idKunde)
+        res.cookie('istAngemeldetAls', idKunde)
+
+        let ort = req.body.ort
+
+        if(!ort){
+            ort = "Borken"
+        }
+
+        weather.find({search: ort, degreeType: 'C'}, function(err, result) {
+            if(err) console.log(err);
+    
+            res.render('index.ejs', {    
+                ort : result[0].location.name,
+                meldungWetter :  result[0].current.temperature + " °" + result[0].location.degreetype,  
+                meldung : process.env.PORT || 3000       
+            }) 
+        });        
+    }else{            
+        console.log("Der Cookie wird gelöscht")
+        res.cookie('istAngemeldetAls','')
+        res.render('login.ejs', {                    
+        })
+    }
+})
 
 
 
@@ -237,34 +282,6 @@ app.get('/login',(req, res, next) => {
     res.cookie('istAngemeldetAls', '')       
     res.render('login.ejs', {                    
     })
-})
-
-app.post('/',(req, res, next) => {   
-    
-    // Der Wert des Inputs mit dem name = "idkunde" wird über
-    // den Request zugewiesen an die Konstante idKunde
-    const idKunde = req.body.idKunde
-    const kennwort = req.body.kennwort
-    
-    console.log(idKunde + " == " + kunde.IdKunde + "&&" + kennwort + " == " + kunde.Kennwort)
-
-    // Wenn der Wert von idKunde dem Wert der Eigenschaft kunde.IdKunde
-    // entspricht UND der Wert von kennwort der Eigenschaft kunde.Kennwort
-    // entspricht, dann werden die Anweisungen im Rumpf der if-Kontrollstruktur
-    // abgearbeitet.
-    if(idKunde == kunde.IdKunde && kennwort == kunde.Kennwort){            
-        console.log("Der Cookie wird gesetzt: " + idKunde)
-        res.cookie('istAngemeldetAls', idKunde)
-        res.render('index.ejs', {  
-            kunde : idKunde,
-            meldung : "Datenbank ist verbunden."          
-        })
-    }else{            
-        console.log("Der Cookie wird gelöscht")
-        res.cookie('istAngemeldetAls','')
-        res.render('login.ejs', {                    
-        })
-    }
 })
 
 // Wenn die Seite localhost:3000/kontoAnlegen angesurft wird, ...
